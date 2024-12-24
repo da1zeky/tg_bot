@@ -14,6 +14,7 @@ bot = telebot.TeleBot(TOKEN)
 temp = {}
 clear = rkr()
 
+
 class Enemy:
     enemies_1 = {
         "ogre": (100, 25, 20),
@@ -24,6 +25,7 @@ class Enemy:
         "muha": (130, 35, 40),
         "ilya": (150, 40, 50)
     }
+
     def __init__(self, hero_lvl):
         self.lvl = hero_lvl
         if self.lvl < 5:
@@ -130,7 +132,7 @@ def callback(call: cbq):
         player[4] += player[5] / 10
         player[4] = round(player[4], 1)
         db.write(player)
-        bot.answer_callback_query(call.id,f"ты тренируешься, теперь твой урон {player[4]}", True)
+        bot.answer_callback_query(call.id, f"ты тренируешься, теперь твой урон {player[4]}", True)
 
 
 def eat(m: Message):
@@ -209,7 +211,8 @@ def block(m: Message):
     temp[m.chat.id]["start"] = datetime.datetime.now().timestamp()
     bot.register_next_step_handler(m, block_handler, side)
 
-def block_handler(m:Message, side):
+
+def block_handler(m: Message, side):
     temp[m.chat.id]["finish"] = datetime.datetime.now().timestamp()
     if temp[m.chat.id]["finish"] - temp[m.chat.id]["start"] > 3:
         temp[m.chat.id]["win"] = 0
@@ -243,7 +246,7 @@ def block_handler(m:Message, side):
                 return
 
 
-def exp_check(m:Message):
+def exp_check(m: Message):
     player = db.read("user_id", m.chat.id)
     exp = player[6]
     max_exp = 100 + ((player[5] - 1) * 100 * 0.1)
@@ -263,8 +266,7 @@ def fight(m: Message):
     new_Enemy(m)
 
 
-
-def new_Enemy(m:Message):
+def new_Enemy(m: Message):
     player = db.read("user_id", m.chat.id)
     enemy = Enemy(player[5])
     kb = rkm(resize_keyboard=True, one_time_keyboard=True)
@@ -294,6 +296,7 @@ def attack(m: Message, enemy: Enemy):
         enemy = None
         new_Enemy(m)
 
+
 def hero_attack(m: Message, enemy: Enemy):
     player = db.read("user_id", m.chat.id)
     enemy.hp -= player[4]
@@ -305,6 +308,7 @@ def hero_attack(m: Message, enemy: Enemy):
     else:
         bot.send_message(m.chat.id, f"У врага осталось {enemy.hp} хп")
         return True
+
 
 def enemy_attack(m: Message, enemy: Enemy):
     player = db.read("user_id", m.chat.id)
